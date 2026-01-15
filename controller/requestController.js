@@ -1,11 +1,14 @@
+const { request } = require('express');
 const requests = require('../models/requestModel')
-
+const jwt = require("jsonwebtoken")
 // create requestcontroller
 exports.createRequestController = async (req,res) =>{
     console.log("inside createRequestController");
     const {resourceType,urgency,location,details,contactName,phone} = req.body
+
     try{
         const newRequest = new requests({
+            
             resourceType,
             urgency,
             location,
@@ -23,7 +26,34 @@ exports.createRequestController = async (req,res) =>{
         res.status(500).json("Server error")
     }
 }
+//get all victim request (victim)
+exports.getVictimRequestController = async(req,res) =>{
+    console.log("Inside getVictimRequestsController")
 
+    
+    try{
+        const authHeader = req.headers.authorization
+
+        if(!authHeader){
+            return res.status(401).json("Authorization header missing")
+        }
+        // get token from header 
+        const token = authHeader.split(" ")[1]
+        // verify token
+        const decoded = jwt.verify(token,process.env.JWTSECRET)
+        // get victim id from token
+        const victimId = decoded.userId
+
+        // fetch only this victim's requests
+
+        const myRequests = await requests.find({victimId})
+
+        res.status(200).json(myRequests)
+    }catch(error){
+        console.log(error)
+        res.status(401).json("Unauthorized access")
+    }
+}
 // get all requests (admin)
 exports.getAllRequestsController = async (req,res) => {
     console.log("Inside getAllRequestController")
