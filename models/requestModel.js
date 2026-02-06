@@ -1,7 +1,10 @@
 const mongoose = require('mongoose');
 
 const requestSchema = new mongoose.Schema({
-    
+    victimId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users"
+    },
     resourceType:String,
     urgency:String,
     location:String,

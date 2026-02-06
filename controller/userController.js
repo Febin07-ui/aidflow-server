@@ -40,7 +40,7 @@ exports.loginController = async (req,res) =>{
                 return res.status(403).json("Your account is Blocked by admin")
             }else if(password == existingUser.password){
                 // generate token
-                const token = jwt.sign({userMail: existingUser.email ,role:existingUser.role},process.env.JWTSECRET,{ expiresIn: "1d" })
+                const token = jwt.sign({userId: existingUser._id ,role:existingUser.role},process.env.JWTSECRET,{ expiresIn: "1d" })
                 res.status(200).json({token,
                 user: {
                     _id: existingUser._id,

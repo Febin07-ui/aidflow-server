@@ -15,7 +15,6 @@ router.post('/login',userController.loginController)
 router.post('/google/sign-in',userController.googleLoginController)
 
 
-
 // create request
 router.post('/request/create',requestController.createRequestController)
 // get all victim request for victim
@@ -46,5 +45,9 @@ router.post('/volunteer/accept-task',taskController.acceptTaskController)
 router.get('/volunteer/my-tasks/:volunteerId',taskController.getMyTasksController)
 // voluteer mark delivered
 router.put('/volunteer/mark-delivered',taskController.markDeliveredController)
+// volunteer stats
+router.get('/volunteer/stats',taskController.getVolunteerDashboardController)
+
+
 
 module.exports = router

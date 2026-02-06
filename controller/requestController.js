@@ -7,18 +7,27 @@ exports.createRequestController = async (req,res) =>{
     const {resourceType,urgency,location,details,contactName,phone} = req.body
 
     try{
+
+        const authHeader = req.headers.authorization
+        const token = authHeader.split(" ")[1]
+
+        const decoded = jwt.verify(token, process.env.JWTSECRET)
+
+        const victimId = decoded.userId  
+
         const newRequest = new requests({
-            
-            resourceType,
-            urgency,
-            location,
-            details,
-            contactName,
-            phone,
-            status:"pending"
+        victimId,   
+        resourceType,
+        urgency,
+        location,
+        details,
+        contactName,
+        phone,
+        status:"pending"
         })
 
         await newRequest.save()
+
         res.status(200).json("Request submitted successfully")
 
     }catch(error){
@@ -43,9 +52,7 @@ exports.getVictimRequestController = async(req,res) =>{
         const decoded = jwt.verify(token,process.env.JWTSECRET)
         // get victim id from token
         const victimId = decoded.userId
-
         // fetch only this victim's requests
-
         const myRequests = await requests.find({victimId})
 
         res.status(200).json(myRequests)

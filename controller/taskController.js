@@ -1,6 +1,6 @@
 const tasks = require('../models/taskModel')
 const requests = require('../models/requestModel');
-
+const jwt = require("jsonwebtoken")
 exports.acceptTaskController = async (req,res) =>{
     console.log("Inside acceptController");
 
@@ -65,5 +65,26 @@ exports.markDeliveredController = async (req,res) =>{
     }catch(error){
         console.log("Server error")
         res.status(500).json("Server error")
+    }
+}
+
+exports.getVolunteerDashboardController = async (req,res) => {
+    try{
+        authHeader = req.headers.authorization
+
+        const token = authHeader.split(" ")[1]
+        const decoded = jwt.verify(token,process.env.JWTSECRET)
+
+        const volunteerId = decoded.userId
+
+        const total = await tasks.countDocuments({volunteerId})
+        const active = await tasks.countDocuments({volunteerId,status:"in-progress"})
+        const completed = await tasks.countDocuments({volunteerId,status:"delivered"})
+
+        res.status(200).json({
+            total,active,completed
+        })
+    }catch(err){
+        res.status(401).json("Unauthorized")
     }
 }
